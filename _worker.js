@@ -19,7 +19,11 @@ let customECHDomain = 'cloudflare-ech.com';
 
 // 默认优选域名列表
 const directDomains = [
-    { name: "cloudflare.182682.xyz", domain: "cloudflare.182682.xyz" },
+    { domain: "skk.moe" },
+    { domain: "ip.sb" },
+    { domain: "time.is" },
+    { domain: "cfip.xxxxxxxx.tk" },
+    { domain: "cloudflare.182682.xyz" },
     { domain: "freeyx.cloudflare88.eu.org" },
     { domain: "bestcf.top" },
     { domain: "cdn.2020111.xyz" },
@@ -33,8 +37,8 @@ const directDomains = [
 ];
 
 // 默认优选IP来源URL
-const defaultIPURL = 'https://raw.githubusercontent.com/qwer-search/bestip/refs/heads/main/kejilandbestip.txt';
-
+# const defaultIPURL = 'https://raw.githubusercontent.com/qwer-search/bestip/refs/heads/main/kejilandbestip.txt';
+const defaultIPURL = 'https://github.com/ymyuuu/IPDB/blob/main/BestCF/bestcfv6.txt';
 // UUID验证
 function isValidUUID(str) {
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
