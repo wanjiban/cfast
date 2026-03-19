@@ -37,7 +37,7 @@ const directDomains = [
 ];
 
 // 默认优选IP来源URL
-# const defaultIPURL = 'https://raw.githubusercontent.com/qwer-search/bestip/refs/heads/main/kejilandbestip.txt';
+// const defaultIPURL = 'https://raw.githubusercontent.com/qwer-search/bestip/refs/heads/main/kejilandbestip.txt';
 const defaultIPURL = 'https://raw.githubusercontent.com/ymyuuu/IPDB/refs/heads/main/BestCF/bestcfv6.txt';
 // UUID验证
 function isValidUUID(str) {
