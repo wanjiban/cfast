@@ -20,11 +20,11 @@ let customECHDomain = 'cloudflare-ech.com';
 // 默认优选域名列表
 const directDomains = [
     { domain: "skk.moe" },
-    { domain: "go.cf.090227.xyz},
-    { domain: "www.visa.cn},
-    { domain: "mfa.gov.ua},
-    { domain: "www.shopify.com},
-    { domain: "cf.tencentapp.cn},
+    { domain: "go.cf.090227.xyz" },
+    { domain: "www.visa.cn" },
+    { domain: "mfa.gov.ua" },
+    { domain: "www.shopify.com" },
+    { domain: "cf.tencentapp.cn" },
     { domain: "ip.sb" },
     { domain: "time.is" },
     { domain: "cfip.xxxxxxxx.tk" },
