@@ -567,7 +567,8 @@ async function handleSubscriptionRequest(request, user, customDomain, piu, ipv4E
                         const match = 原始地址.match(regex);
 
                         if (match) {
-                            const 节点地址 = match[1].replace(/[\[\]]/g, ''); // 移除IPv6的方括号
+                            //const 节点地址 = match[1].replace(/[\[\]]/g, ''); // 移除IPv6的方括号
+                            const 节点地址 = match[1];
                             const 节点端口 = match[2] || 443;
                             const 节点备注 = match[3] || 节点地址;
                             return {
