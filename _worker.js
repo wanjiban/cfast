@@ -307,10 +307,13 @@ function generateLinksFromSource(list, user, workerDomain, disableNonTLS = false
                 const wsParams = new URLSearchParams({ 
                     encryption: 'none', 
                     security: 'tls', 
-                    sni: workerDomain, 
+                    //sni: workerDomain, 
+                    sni: ('cf', workerDomain)
                     fp: 'chrome', 
                     type: 'ws', 
                     host: workerDomain, 
+                    // 默认加上 alpn，增强兼容性
+                    alpn: 'h2,http/1.1',
                     path: wsPath
                 });
                 if (echConfig) {
