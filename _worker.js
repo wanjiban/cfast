@@ -308,7 +308,7 @@ function generateLinksFromSource(list, user, workerDomain, disableNonTLS = false
                     encryption: 'none', 
                     security: 'tls', 
                     //sni: workerDomain, 
-                    sni: ('cf', workerDomain)
+                    sni: ('cf', workerDomain),
                     fp: 'chrome', 
                     type: 'ws', 
                     host: workerDomain, 
