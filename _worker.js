@@ -493,7 +493,8 @@ function generateLinksFromNewIPs(list, user, workerDomain, customPath = '/', ech
         
         if (CF_HTTPS_PORTS.includes(port)) {
             const wsNodeName = `${nodeName}-${port}-WS-TLS`;
-            const link = `${proto}://${user}@${item.ip}:${port}?encryption=none&security=tls&sni=${workerDomain}&fp=chrome&type=ws&host=${workerDomain}&path=${wsPath}${echSuffix}#${encodeURIComponent(wsNodeName)}`;
+            // add cf
+            const link = `${proto}://${user}@${item.ip}:${port}?encryption=none&security=tls&sni=cf${workerDomain}&fp=chrome&type=ws&host=${workerDomain}&path=${wsPath}${echSuffix}#${encodeURIComponent(wsNodeName)}`;
             links.push(link);
         } else if (CF_HTTP_PORTS.includes(port)) {
             const wsNodeName = `${nodeName}-${port}-WS`;
@@ -501,7 +502,7 @@ function generateLinksFromNewIPs(list, user, workerDomain, customPath = '/', ech
             links.push(link);
         } else {
             const wsNodeName = `${nodeName}-${port}-WS-TLS`;
-            const link = `${proto}://${user}@${item.ip}:${port}?encryption=none&security=tls&sni=${workerDomain}&fp=chrome&type=ws&host=${workerDomain}&path=${wsPath}${echSuffix}#${encodeURIComponent(wsNodeName)}`;
+            const link = `${proto}://${user}@${item.ip}:${port}?encryption=none&security=tls&sni=cf${workerDomain}&fp=chrome&type=ws&host=${workerDomain}&path=${wsPath}${echSuffix}#${encodeURIComponent(wsNodeName)}`;
             links.push(link);
         }
     });
