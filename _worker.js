@@ -76,7 +76,7 @@ async function fetchDynamicIPs(ipv4Enabled = true, ipv6Enabled = true, ispMobile
 
         const [ipv4List, ipv6List] = await Promise.all(fetchPromises);
         results = [...ipv4List, ...ipv6List];
-        
+
         // 按运营商筛选
         if (results.length > 0) {
             results = results.filter(item => {
@@ -87,7 +87,7 @@ async function fetchDynamicIPs(ipv4Enabled = true, ipv6Enabled = true, ispMobile
                 return true;
             });
         }
-        
+
         return results.length > 0 ? results : [];
     } catch (e) {
         return [];
@@ -280,9 +280,9 @@ function generateLinksFromSource(list, user, workerDomain, disableNonTLS = false
             nodeNameBase = `${nodeNameBase}-${item.colo.trim()}`;
         }
         const safeIP = item.ip.includes(':') ? `[${item.ip}]` : item.ip;
-        
+
         let portsToGenerate = [];
-        
+
         if (item.port) {
             const port = item.port;
             if (CF_HTTPS_PORTS.includes(port)) {
@@ -304,14 +304,14 @@ function generateLinksFromSource(list, user, workerDomain, disableNonTLS = false
         portsToGenerate.forEach(({ port, tls }) => {
             if (tls) {
                 const wsNodeName = `${nodeNameBase}-${port}-WS-TLS`;
-                const wsParams = new URLSearchParams({ 
-                    encryption: 'none', 
-                    security: 'tls', 
-                    sni: workerDomain, 
+                const wsParams = new URLSearchParams({
+                    encryption: 'none',
+                    security: 'tls',
+                    sni: workerDomain,
                     //sni: ('cf' + workerDomain),
-                    fp: 'chrome', 
-                    type: 'ws', 
-                    host: workerDomain, 
+                    fp: 'chrome',
+                    type: 'ws',
+                    host: workerDomain,
                     // 默认加上 alpn，增强兼容性
                     alpn: 'h2,http/1.1',
                     path: wsPath
@@ -353,9 +353,9 @@ async function generateTrojanLinksFromSource(list, user, workerDomain, disableNo
             nodeNameBase = `${nodeNameBase}-${item.colo.trim()}`;
         }
         const safeIP = item.ip.includes(':') ? `[${item.ip}]` : item.ip;
-        
+
         let portsToGenerate = [];
-        
+
         if (item.port) {
             const port = item.port;
             if (CF_HTTPS_PORTS.includes(port)) {
@@ -379,12 +379,12 @@ async function generateTrojanLinksFromSource(list, user, workerDomain, disableNo
         portsToGenerate.forEach(({ port, tls }) => {
             if (tls) {
                 const wsNodeName = `${nodeNameBase}-${port}-Trojan-WS-TLS`;
-                const wsParams = new URLSearchParams({ 
-                    security: 'tls', 
-                    sni: workerDomain, 
-                    fp: 'chrome', 
-                    type: 'ws', 
-                    host: workerDomain, 
+                const wsParams = new URLSearchParams({
+                    security: 'tls',
+                    sni: workerDomain,
+                    fp: 'chrome',
+                    type: 'ws',
+                    host: workerDomain,
                     path: wsPath
                 });
                 if (echConfig) {
@@ -422,9 +422,9 @@ function generateVMessLinksFromSource(list, user, workerDomain, disableNonTLS = 
             nodeNameBase = `${nodeNameBase}-${item.colo.trim()}`;
         }
         const safeIP = item.ip.includes(':') ? `[${item.ip}]` : item.ip;
-        
+
         let portsToGenerate = [];
-        
+
         if (item.port) {
             const port = item.port;
             if (CF_HTTPS_PORTS.includes(port)) {
@@ -464,14 +464,14 @@ function generateVMessLinksFromSource(list, user, workerDomain, disableNonTLS = 
                 vmessConfig.sni = workerDomain;
                 vmessConfig.fp = "chrome";
             }
-            
+
             // 核心修复：处理中文编码，防止 btoa 报错
             const jsonStr = JSON.stringify(vmessConfig);
             const vmessBase64 = btoa(encodeURIComponent(jsonStr).replace(/%([0-9A-F]{2})/g,
                 function toSolidBytes(match, p1) {
                     return String.fromCharCode('0x' + p1);
-            }));
-            
+                }));
+
             links.push(`vmess://${vmessBase64}`);
         });
     });
@@ -486,11 +486,11 @@ function generateLinksFromNewIPs(list, user, workerDomain, customPath = '/', ech
     const wsPath = customPath || '/';
     const proto = 'vless';
     const echSuffix = echConfig ? `&alpn=h3%2Ch2%2Chttp%2F1.1&ech=${encodeURIComponent(echConfig)}` : '';
-    
+
     list.forEach(item => {
         const nodeName = item.name.replace(/\s/g, '_');
         const port = item.port;
-        
+
         if (CF_HTTPS_PORTS.includes(port)) {
             const wsNodeName = `${nodeName}-${port}-WS-TLS`;
             // add cf
@@ -522,7 +522,7 @@ async function handleSubscriptionRequest(request, user, customDomain, piu, ipv4E
         // 确保至少有一个协议被启用
         const hasProtocol = evEnabled || etEnabled || vmEnabled;
         const useVL = hasProtocol ? evEnabled : true;  // 如果没有选择任何协议，默认使用VLESS
-        
+
         if (useVL) {
             finalLinks.push(...generateLinksFromSource(list, user, nodeDomain, disableNonTLS, wsPath, echConfig));
         }
@@ -585,16 +585,15 @@ async function handleSubscriptionRequest(request, user, customDomain, piu, ipv4E
                     }).filter(item => {
                         if (item === null) return false;
                         const isIPv6 = item.ip.includes(':');
-                        const isIPv4 = !isIPv6 && /^[\d.]+$/.test(item.ip);
                         if (isIPv6 && !ipv6Enabled) return false;
-                        if (isIPv4 && !ipv4Enabled) return false;
+                        if (!isIPv6 && !ipv4Enabled) return false;
                         return true;
                     });
-                    
+
                     if (IP列表.length > 0) {
                         const hasProtocol = evEnabled || etEnabled || vmEnabled;
                         const useVL = hasProtocol ? evEnabled : true;
-                        
+
                         if (useVL) {
                             finalLinks.push(...generateLinksFromNewIPs(IP列表, user, nodeDomain, wsPath, echConfig));
                         }
@@ -604,7 +603,7 @@ async function handleSubscriptionRequest(request, user, customDomain, piu, ipv4E
                 // 支持多行文本，包含混合格式（优选API URL + IP列表）
                 const 完整优选列表 = await 整理成数组(piu);
                 const 优选API = [], 优选IP = [], 其他节点 = [];
-                
+
                 for (const 元素 of 完整优选列表) {
                     if (元素.toLowerCase().startsWith('https://')) {
                         优选API.push(元素);
@@ -614,13 +613,13 @@ async function handleSubscriptionRequest(request, user, customDomain, piu, ipv4E
                         优选IP.push(元素);
                     }
                 }
-                
+
                 // 从优选API获取IP
                 if (优选API.length > 0) {
                     const 优选API的IP = await 请求优选API(优选API);
                     优选IP.push(...优选API的IP);
                 }
-                
+
                 // 解析所有IP并生成节点
                 if (优选IP.length > 0) {
                     const IP列表 = 优选IP.map(原始地址 => {
@@ -641,16 +640,15 @@ async function handleSubscriptionRequest(request, user, customDomain, piu, ipv4E
                     }).filter(item => {
                         if (item === null) return false;
                         const isIPv6 = item.ip.includes(':');
-                        const isIPv4 = !isIPv6 && /^[\d.]+$/.test(item.ip);
                         if (isIPv6 && !ipv6Enabled) return false;
-                        if (isIPv4 && !ipv4Enabled) return false;
+                        if (!isIPv6 && !ipv4Enabled) return false;
                         return true;
                     });
-                    
+
                     if (IP列表.length > 0) {
                         const hasProtocol = evEnabled || etEnabled || vmEnabled;
                         const useVL = hasProtocol ? evEnabled : true;
-                        
+
                         if (useVL) {
                             finalLinks.push(...generateLinksFromNewIPs(IP列表, user, nodeDomain, wsPath, echConfig));
                         }
@@ -661,15 +659,14 @@ async function handleSubscriptionRequest(request, user, customDomain, piu, ipv4E
                 let newIPList = await fetchAndParseNewIPs(piu);
                 newIPList = newIPList.filter(item => {
                     const isIPv6 = item.ip.includes(':');
-                    const isIPv4 = !isIPv6 && /^[\d.]+$/.test(item.ip);
                     if (isIPv6 && !ipv6Enabled) return false;
-                    if (isIPv4 && !ipv4Enabled) return false;
+                    if (!isIPv6 && !ipv4Enabled) return false;
                     return true;
                 });
                 if (newIPList.length > 0) {
                     const hasProtocol = evEnabled || etEnabled || vmEnabled;
                     const useVL = hasProtocol ? evEnabled : true;
-                    
+
                     if (useVL) {
                         finalLinks.push(...generateLinksFromNewIPs(newIPList, user, nodeDomain, wsPath, echConfig));
                     }
@@ -688,7 +685,7 @@ async function handleSubscriptionRequest(request, user, customDomain, piu, ipv4E
 
     let subscriptionContent;
     let contentType = 'text/plain; charset=utf-8';
-    
+
     switch (target.toLowerCase()) {
         case 'clash':
         case 'clashr':
@@ -708,9 +705,9 @@ async function handleSubscriptionRequest(request, user, customDomain, piu, ipv4E
         default:
             subscriptionContent = btoa(finalLinks.join('\n'));
     }
-    
+
     return new Response(subscriptionContent, {
-        headers: { 
+        headers: {
             'Content-Type': contentType,
             'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0',
         },
@@ -725,7 +722,7 @@ function generateClashConfig(links) {
     yaml += 'mode: rule\n';
     yaml += 'log-level: info\n\n';
     yaml += 'proxies:\n';
-    
+
     const proxyNames = [];
     links.forEach((link, index) => {
         const name = decodeURIComponent(link.split('#')[1] || `节点${index + 1}`);
@@ -739,7 +736,7 @@ function generateClashConfig(links) {
         const sni = link.match(/sni=([^&#]+)/)?.[1] || '';
         const echParam = link.match(/[?&]ech=([^&#]+)/)?.[1];
         const echDomain = echParam ? decodeURIComponent(echParam).split('+')[0] : '';
-        
+
         yaml += `  - name: ${name}\n`;
         yaml += `    type: vless\n`;
         yaml += `    server: ${server}\n`;
@@ -760,7 +757,7 @@ function generateClashConfig(links) {
             yaml += `      query-server-name: ${echDomain}\n`;
         }
     });
-    
+
     yaml += '\nproxy-groups:\n';
     yaml += '  - name: PROXY\n';
     yaml += '    type: select\n';
@@ -770,7 +767,7 @@ function generateClashConfig(links) {
     yaml += '  - IP-CIDR,127.0.0.0/8,DIRECT\n';
     yaml += '  - GEOIP,CN,DIRECT\n';
     yaml += '  - MATCH,PROXY\n';
-    
+
     return yaml;
 }
 
@@ -1422,7 +1419,7 @@ function generateHomePage(scuValue) {
         
         
         // 订阅转换地址（从服务器注入）
-        const SUB_CONVERTER_URL = "${ scu }";
+        const SUB_CONVERTER_URL = "${scu}";
         
         function tryOpenApp(schemeUrl, fallbackCallback, timeout) {
             timeout = timeout || 2500;
@@ -1617,7 +1614,7 @@ export default {
     async fetch(request, env, ctx) {
         const url = new URL(request.url);
         const path = url.pathname;
-        
+
         // 主页
         if (path === '/' || path === '') {
             const scuValue = env?.scu || scu;
@@ -1625,7 +1622,7 @@ export default {
                 headers: { 'Content-Type': 'text/html; charset=utf-8' }
             });
         }
-        
+
         // 测试优选API API: /test-optimize-api?url=xxx&port=443
         if (path === '/test-optimize-api') {
             if (request.method === 'OPTIONS') {
@@ -1637,81 +1634,81 @@ export default {
                     }
                 });
             }
-            
+
             const apiUrl = url.searchParams.get('url');
             const port = url.searchParams.get('port') || '443';
             const timeout = parseInt(url.searchParams.get('timeout') || '3000');
-            
+
             if (!apiUrl) {
-                return new Response(JSON.stringify({ 
-                    success: false, 
-                    error: '缺少url参数' 
+                return new Response(JSON.stringify({
+                    success: false,
+                    error: '缺少url参数'
                 }), {
                     status: 400,
-                    headers: { 
+                    headers: {
                         'Content-Type': 'application/json; charset=utf-8',
                         'Access-Control-Allow-Origin': '*'
                     }
                 });
             }
-            
+
             try {
                 const results = await 请求优选API([apiUrl], port, timeout);
-                return new Response(JSON.stringify({ 
-                    success: true, 
+                return new Response(JSON.stringify({
+                    success: true,
                     results: results,
                     total: results.length,
                     message: `成功获取 ${results.length} 个优选IP`
                 }, null, 2), {
-                    headers: { 
+                    headers: {
                         'Content-Type': 'application/json; charset=utf-8',
                         'Access-Control-Allow-Origin': '*'
                     }
                 });
             } catch (error) {
-                return new Response(JSON.stringify({ 
-                    success: false, 
-                    error: error.message 
+                return new Response(JSON.stringify({
+                    success: false,
+                    error: error.message
                 }), {
                     status: 500,
-                    headers: { 
+                    headers: {
                         'Content-Type': 'application/json; charset=utf-8',
                         'Access-Control-Allow-Origin': '*'
                     }
                 });
             }
         }
-        
+
         // 订阅请求格式: /{UUID或Password}/sub?domain=xxx&epd=yes&epi=yes&egi=yes
         const pathMatch = path.match(/^\/([^\/]+)\/sub$/);
         if (pathMatch) {
             const uuid = pathMatch[1];
-            
+
             const domain = url.searchParams.get('domain');
             if (!domain) {
                 return new Response('缺少域名参数', { status: 400 });
             }
-            
+
             // 从URL参数获取配置
             epd = url.searchParams.get('epd') !== 'no';
             epi = url.searchParams.get('epi') !== 'no';
             egi = url.searchParams.get('egi') !== 'no';
             const piu = url.searchParams.get('piu') || defaultIPURL;
-            
+
             // 协议选择
             const evEnabled = url.searchParams.get('ev') === 'yes' || (url.searchParams.get('ev') === null && ev);
             const etEnabled = url.searchParams.get('et') === 'yes';
             const vmEnabled = url.searchParams.get('mess') === 'yes';
-            
+
             // IPv4/IPv6选择
             const ipv4Enabled = url.searchParams.get('ipv4') !== 'no';
             const ipv6Enabled = url.searchParams.get('ipv6') !== 'no';
-            
+
             // 运营商选择
             const ispMobile = url.searchParams.get('ispMobile') !== 'no';
             const ispUnicom = url.searchParams.get('ispUnicom') !== 'no';
             const ispTelecom = url.searchParams.get('ispTelecom') !== 'no';
-            
+
             // TLS控制（ECH 开启时强制仅 TLS）
             let disableNonTLS = url.searchParams.get('dkby') === 'yes';
             const echParam = url.searchParams.get('ech');
@@ -1726,7 +1723,7 @@ export default {
 
             return await handleSubscriptionRequest(request, uuid, domain, piu, ipv4Enabled, ipv6Enabled, ispMobile, ispUnicom, ispTelecom, evEnabled, etEnabled, vmEnabled, disableNonTLS, customPath, echConfig);
         }
-        
+
         return new Response('Not Found', { status: 404 });
     }
 };
