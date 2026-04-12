@@ -244,7 +244,7 @@ async function fetchAndParseNewIPs(piu) {
         const text = await response.text();
         const results = [];
         const lines = text.trim().replace(/\r/g, "").split('\n');
-        const regex = /^([^:]+):(\d+)#(.*)$/;
+        const regex = /^(\[[\da-fA-F:]+\]|[\d.]+|[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?)*)(?::(\d+))?(?:#(.+))?$/;
 
         for (const line of lines) {
             const trimmedLine = line.trim();
@@ -253,8 +253,8 @@ async function fetchAndParseNewIPs(piu) {
             if (match) {
                 results.push({
                     ip: match[1],
-                    port: parseInt(match[2], 10),
-                    name: match[3].trim() || match[1]
+                    port: parseInt(match[2] || 443, 10),
+                    name: match[3] ? match[3].trim() : match[1]
                 });
             }
         }
@@ -582,7 +582,14 @@ async function handleSubscriptionRequest(request, user, customDomain, piu, ipv4E
                             };
                         }
                         return null;
-                    }).filter(item => item !== null);
+                    }).filter(item => {
+                        if (item === null) return false;
+                        const isIPv6 = item.ip.includes(':');
+                        const isIPv4 = !isIPv6 && /^[\d.]+$/.test(item.ip);
+                        if (isIPv6 && !ipv6Enabled) return false;
+                        if (isIPv4 && !ipv4Enabled) return false;
+                        return true;
+                    });
                     
                     if (IP列表.length > 0) {
                         const hasProtocol = evEnabled || etEnabled || vmEnabled;
@@ -631,7 +638,14 @@ async function handleSubscriptionRequest(request, user, customDomain, piu, ipv4E
                             };
                         }
                         return null;
-                    }).filter(item => item !== null);
+                    }).filter(item => {
+                        if (item === null) return false;
+                        const isIPv6 = item.ip.includes(':');
+                        const isIPv4 = !isIPv6 && /^[\d.]+$/.test(item.ip);
+                        if (isIPv6 && !ipv6Enabled) return false;
+                        if (isIPv4 && !ipv4Enabled) return false;
+                        return true;
+                    });
                     
                     if (IP列表.length > 0) {
                         const hasProtocol = evEnabled || etEnabled || vmEnabled;
@@ -644,7 +658,14 @@ async function handleSubscriptionRequest(request, user, customDomain, piu, ipv4E
                 }
             } else {
                 // 原有的GitHub优选逻辑（单URL）
-                const newIPList = await fetchAndParseNewIPs(piu);
+                let newIPList = await fetchAndParseNewIPs(piu);
+                newIPList = newIPList.filter(item => {
+                    const isIPv6 = item.ip.includes(':');
+                    const isIPv4 = !isIPv6 && /^[\d.]+$/.test(item.ip);
+                    if (isIPv6 && !ipv6Enabled) return false;
+                    if (isIPv4 && !ipv4Enabled) return false;
+                    return true;
+                });
                 if (newIPList.length > 0) {
                     const hasProtocol = evEnabled || etEnabled || vmEnabled;
                     const useVL = hasProtocol ? evEnabled : true;
