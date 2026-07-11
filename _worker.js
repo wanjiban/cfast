@@ -19,6 +19,7 @@ let customECHDomain = 'cloudflare-ech.com';
 
 // 默认优选域名列表
 const directDomains = [
+    { domain: "saas.sin.fan" },
     { domain: "cf.tencentapp.cn" },
     { domain: "skk.moe" },
     { domain: "go.cf.090227.xyz" },
