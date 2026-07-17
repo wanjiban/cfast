@@ -314,7 +314,7 @@ function generateLinksFromSource(list, user, workerDomain, disableNonTLS = false
                     type: 'ws',
                     host: workerDomain,
                     // 默认加上 alpn，增强兼容性
-                    alpn: 'h2,http/1.1',
+                    alpn: 'h3,h2,http/1.1',
                     path: wsPath
                 });
                 if (echConfig) {
